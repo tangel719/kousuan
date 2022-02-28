@@ -1,10 +1,6 @@
 import random
 
-from kousuan_conf import NUMBER_OF_COMBINED_MINUS_EQUATIONS, NUMBER_OF_COMBINED_PLUS_EQUATIONS, NUMBER_OF_MIXED_EQUATIONS, get_conf
-
-
-SYMBOL_PLUS = "+"
-SYMBOL_MINUS = "-"
+from kousuan_conf import NUMBER_OF_COMBINED_MINUS_EQUATIONS, NUMBER_OF_COMBINED_PLUS_EQUATIONS, NUMBER_OF_MIXED_EQUATIONS, SYMBOL_MINUS, SYMBOL_PLUS, get_conf
 
 
 _equations = {}
@@ -84,21 +80,19 @@ def generate(upper_bound_of_number, equation_number):
         raise Exception("required equation number %d is larger than total possible equation number when num limit is %d" % (
             upper_bound_of_number, equation_number))
 
-    number_of_combined_plus_equations = int(get_conf(NUMBER_OF_COMBINED_PLUS_EQUATIONS, 0))
-    number_of_combined_minus_equations = int(get_conf(NUMBER_OF_COMBINED_MINUS_EQUATIONS, 0))
+    number_of_combined_plus_equations = int(
+        get_conf(NUMBER_OF_COMBINED_PLUS_EQUATIONS, 0))
+    number_of_combined_minus_equations = int(
+        get_conf(NUMBER_OF_COMBINED_MINUS_EQUATIONS, 0))
     number_of_mixed_equations = int(get_conf(NUMBER_OF_MIXED_EQUATIONS, 0))
     number_of_simple_equations = equation_number
     - number_of_combined_plus_equations
     - number_of_combined_minus_equations
     - number_of_mixed_equations
 
-    print(number_of_combined_plus_equations)
-    print(number_of_combined_minus_equations)
-    print(number_of_mixed_equations)
-    print(number_of_simple_equations)
-
     if number_of_simple_equations < 0:
-        required_equation_number = number_of_combined_plus_equations + number_of_mixed_equations + number_of_combined_minus_equations
+        required_equation_number = number_of_combined_plus_equations + \
+            number_of_mixed_equations + number_of_combined_minus_equations
         raise Exception("required equation number %d is larger than total equation number %d" % (
             required_equation_number, equation_number))
 

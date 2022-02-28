@@ -1,7 +1,10 @@
 
 
 import configparser
+from stat import FILE_ATTRIBUTE_ARCHIVE
 
+SYMBOL_PLUS = "+"
+SYMBOL_MINUS = "-"
 # excel 每行的算式的数量
 NUMBER_OF_EQUATIONS_PER_ROW = "number_of_equations_per_row"
 # 生成算式的总数
@@ -14,11 +17,15 @@ NUMBER_OF_COMBINED_PLUS_EQUATIONS = "number_of_combined_plus_equations"
 NUMBER_OF_COMBINED_MINUS_EQUATIONS = "number_of_combined_minus_equations"
 # 混合运算题的数量
 NUMBER_OF_MIXED_EQUATIONS = "number_of_mixed_equations"
+# 生成的文件路径
+EQUATION_FILE_PATH = "equation_file_path"
+
+
 
 _conf = {
     NUMBER_OF_EQUATIONS_PER_ROW: 5,
     NUMBER_OF_EQUATIONS: 100,
-    UPPER_BOUND_OF_NUMBER: 20
+    UPPER_BOUND_OF_NUMBER: 20,
 }
 
 

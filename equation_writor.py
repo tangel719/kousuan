@@ -2,8 +2,9 @@ import time
 
 import xlwt
 
-from kousuan_conf import NUMBER_OF_EQUATIONS_PER_ROW, get_conf
+from kousuan_conf import EQUATION_FILE_PATH, NUMBER_OF_EQUATIONS_PER_ROW, SYMBOL_MINUS, SYMBOL_PLUS, get_conf
 
+EXCEL_CELL_SYMBOL_WIDTH = 1 * 256
 EXCEL_CELL_WIDTH = 3 * 256
 EXCEL_CELL_HEIGHT = 2 * 256
 
@@ -20,24 +21,37 @@ def write_to_file(equations):
     alignment.vert = 0x01
     style.alignment = alignment
 
-    sheet.write_merge(0, 0, 0, get_conf(NUMBER_OF_EQUATIONS_PER_ROW, 5)*5-1, u"口算练习", style)
-    sheet.write_merge(1, 1, 0, get_conf(NUMBER_OF_EQUATIONS_PER_ROW, 5)*5-1,
-                      u"用时:                             得分:                    ")
+    max_equation_length = 3
+    for k in equations:
+        if len(equations[k]) > max_equation_length:
+            max_equation_length = len(equations[k])
+
+    sheet_max_cells = get_conf(NUMBER_OF_EQUATIONS_PER_ROW, 5)*(max_equation_length+2)-1
+
+    sheet.write_merge(0, 0, 0, sheet_max_cells, u"口算练习", style)
+    sheet.write_merge(1, 1, 0, int(sheet_max_cells/2), u"用时:")
+    sheet.write_merge(1, 1, int(sheet_max_cells/2) + 1, sheet_max_cells, u"得分:")
 
     i, j = 3, 0
     equation_count = 0
     sheet.row(i).height_mismatch = True
     sheet.row(i).height = EXCEL_CELL_HEIGHT
     for k in equations:
-        print(equations[k])
         for item in equations[k]:
-            sheet.col(j).width = EXCEL_CELL_WIDTH
+            if item == SYMBOL_MINUS or item == SYMBOL_PLUS:
+                sheet.col(j).width = EXCEL_CELL_SYMBOL_WIDTH
+            else:
+                sheet.col(j).width = EXCEL_CELL_WIDTH
             sheet.write(i, j, item, style)
             j += 1
 
-        sheet.col(j).width = EXCEL_CELL_WIDTH
+        sheet.col(j).width = EXCEL_CELL_SYMBOL_WIDTH
         sheet.write(i, j, "=", style)
         sheet.col(j+1).width = EXCEL_CELL_WIDTH
+
+        if len(equations[k]) < max_equation_length:
+            j += max_equation_length - len(equations[k])
+
         j += 2
 
         equation_count += 1
@@ -48,5 +62,5 @@ def write_to_file(equations):
             j = 0
             equation_count = 0
 
-    workbook.save("/Users/tangyigang/Desktop/ks_" +
-                  time.strftime("%m%d%H%M")+'.xls')
+    workbook.save("%s/ks_%s" % (get_conf(EQUATION_FILE_PATH),
+                  time.strftime("%m%d%H%M")+'.xls'))
