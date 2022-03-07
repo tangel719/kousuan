@@ -19,6 +19,8 @@ NUMBER_OF_COMBINED_MINUS_EQUATIONS = "number_of_combined_minus_equations"
 NUMBER_OF_MIXED_EQUATIONS = "number_of_mixed_equations"
 # 生成的文件路径
 EQUATION_FILE_PATH = "equation_file_path"
+# 每次运行生成的xls张数
+BATCH_COUNT = "batch_count"
 
 
 

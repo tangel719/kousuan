@@ -76,6 +76,8 @@ def validate(num_limit, equation_number):
 
 
 def generate(upper_bound_of_number, equation_number):
+    global _equations
+    _equations = {}
     if not validate(upper_bound_of_number, equation_number):
         raise Exception("required equation number %d is larger than total possible equation number when num limit is %d" % (
             upper_bound_of_number, equation_number))
@@ -85,38 +87,39 @@ def generate(upper_bound_of_number, equation_number):
     number_of_combined_minus_equations = int(
         get_conf(NUMBER_OF_COMBINED_MINUS_EQUATIONS, 0))
     number_of_mixed_equations = int(get_conf(NUMBER_OF_MIXED_EQUATIONS, 0))
-    number_of_simple_equations = equation_number
-    - number_of_combined_plus_equations
-    - number_of_combined_minus_equations
-    - number_of_mixed_equations
+    number_of_simple_equations = equation_number - number_of_combined_plus_equations - number_of_combined_minus_equations - number_of_mixed_equations
 
+    print("total equations: %d" % equation_number)
     if number_of_simple_equations < 0:
         required_equation_number = number_of_combined_plus_equations + \
             number_of_mixed_equations + number_of_combined_minus_equations
         raise Exception("required equation number %d is larger than total equation number %d" % (
             required_equation_number, equation_number))
 
+
+    print("number of simple equations: %d" % number_of_simple_equations)
     for i in range(number_of_simple_equations):
         while True:
             if not isDup(_simple_equation_generator(upper_bound_of_number)):
                 break
 
+    print("number of combined plus equations: %d" % number_of_combined_plus_equations)
     for i in range(number_of_combined_plus_equations):
         while True:
             if not isDup(_combined_plus_equation_generator(upper_bound_of_number)):
                 break
 
+    print("number of combined minus equations: %d" % number_of_combined_minus_equations)            
     for i in range(number_of_combined_minus_equations):
         while True:
             if not isDup(_combined_minus_equation_generator(upper_bound_of_number)):
                 break
-
+    print("number of mixed equations: %d" % number_of_mixed_equations)            
     for i in range(number_of_mixed_equations):
         while True:
             if not isDup(_mixed_equation_generator(upper_bound_of_number)):
                 break
 
-    global _equations
     return _equations
 
 

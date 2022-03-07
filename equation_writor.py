@@ -1,5 +1,5 @@
 import time
-
+import uuid
 import xlwt
 
 from kousuan_conf import EQUATION_FILE_PATH, NUMBER_OF_EQUATIONS_PER_ROW, SYMBOL_MINUS, SYMBOL_PLUS, get_conf
@@ -62,5 +62,6 @@ def write_to_file(equations):
             j = 0
             equation_count = 0
 
-    workbook.save("%s/ks_%s" % (get_conf(EQUATION_FILE_PATH),
-                  time.strftime("%m%d%H%M")+'.xls'))
+    uid = str(uuid.uuid4())[0:4]
+
+    workbook.save("%s/ks_%s_%s.xls" % (get_conf(EQUATION_FILE_PATH),time.strftime("%m%d%H%M"),uid))
