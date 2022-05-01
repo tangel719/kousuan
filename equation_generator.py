@@ -1,134 +1,141 @@
 import random
 
-from kousuan_conf import NUMBER_OF_COMBINED_MINUS_EQUATIONS, NUMBER_OF_COMBINED_PLUS_EQUATIONS, NUMBER_OF_MIXED_EQUATIONS, SYMBOL_MINUS, SYMBOL_PLUS, get_conf
+from kousuan_conf import SYMBOL_MINUS, SYMBOL_PLUS, get_conf
 
 
 _equations = {}
 
 
-def _number_generator(lower_bound, upper_bound):
-    if upper_bound == 1:
-        return 1
-    return random.randint(lower_bound, upper_bound - 1)
+def _get_key(equation):
+    key = ""
+    for k in equation:
+        key += str(k)
+    return key
 
 
-def _symbol_generator():
-    i = random.randint(1, 2)
-    if i == 1:
-        return SYMBOL_PLUS
-    else:
-        return SYMBOL_MINUS
+def _random_picker(equations, pick_number):
+    _picked = {}
+    length_of_equations = len(equations)
+    for i in range(pick_number):
+        length_of_equations = len(equations)
+        index = random.randint(0, length_of_equations-1)
+        key = _get_key(equations[index])
+        _picked[key] = equations[index]
+        equations = equations[0:index] + \
+            equations[index+1:length_of_equations]
+    return _picked
 
 
-def _simple_equation_generator(num_limit):
-    first_number = _number_generator(1, num_limit)
-    symbol = _symbol_generator()
-    second_number = 0
-    if symbol == SYMBOL_PLUS:
-        second_number = _number_generator(1, num_limit - first_number)
-    else:
-        second_number = _number_generator(1, first_number)
+def _simple_equation_generator():
+    _simple_equation_config = get_conf("simple_equation")
+    low_bound, up_bound, total_number = _simple_equation_config[
+        "low_bound"], _simple_equation_config["up_bound"], _simple_equation_config["generate_number"]
 
-    return (first_number, symbol, second_number)
+    carry_or_abdication = _simple_equation_config["carry_or_abdication"]
+    print("number of simple equations: %d" % total_number)
+    print("low bound of simple equations: %d" % low_bound)
+    print("up bound of simple equations: %d" % up_bound)
+    print("carry or abdication for simple equations: %s\n" % carry_or_abdication)
+    _simple_equations = []
 
+    min_number = int(low_bound / 2)
+    min_number = 1 if min_number == 0 else min_number
+    for i in range(min_number, up_bound+1):
+        for j in range(min_number, up_bound+1):
+            if i+j <= up_bound and i+j >= low_bound:
+                if not carry_or_abdication:
+                    if int(i/10)+int(j/10) == int((i+j)/10):
+                        _simple_equations.append((i, SYMBOL_PLUS, j))
+                else:
+                    _simple_equations.append((i, SYMBOL_PLUS, j))
+            if i-j > low_bound:
+                if not carry_or_abdication:
+                    if int(i/10)-int(j/10) == int((i-j)/10):
+                        _simple_equations.append((i, SYMBOL_MINUS, j))
+                else:
+                    _simple_equations.append((i, SYMBOL_MINUS, j))
 
-def _combined_plus_equation_generator(num_limit):
-    first_number = _number_generator(1, num_limit - 1)
-    second_number = _number_generator(1, num_limit - first_number - 1)
-    third_number = _number_generator(
-        1, num_limit - first_number - second_number)
-    return (first_number, SYMBOL_PLUS, second_number, SYMBOL_PLUS, third_number)
-
-
-def _combined_minus_equation_generator(num_limit):
-    first_number = _number_generator(2, num_limit)
-    second_number = _number_generator(1, first_number - 1)
-    third_number = _number_generator(1, first_number - second_number)
-    return (first_number, SYMBOL_MINUS, second_number, SYMBOL_MINUS, third_number)
-
-
-def _mixed_equation_generator(num_limit):
-    first_number = _number_generator(1, num_limit)
-    first_symbol = _symbol_generator()
-    second_symbol, second_number, third_number = "", 0, 0
-    if first_symbol == SYMBOL_PLUS:
-        second_number = _number_generator(1, num_limit - first_number)
-        second_symbol = SYMBOL_MINUS
-    else:
-        second_number = _number_generator(1, first_number)
-        second_symbol = SYMBOL_PLUS
-
-    if second_symbol == SYMBOL_PLUS:
-        third_number = _number_generator(
-            1, num_limit - (first_number - second_number))
-    else:
-        third_number = _number_generator(1, first_number + second_number)
-
-    return (first_number, first_symbol, second_number, second_symbol, third_number)
+    return _random_picker(_simple_equations, total_number)
 
 
-def validate(num_limit, equation_number):
-    total = 0
-    for i in range(num_limit+1):
-        total += (num_limit - i + 1) + i
-    print("total possible equation number: %d" % total)
-    return total >= equation_number
+def _combined_plus_equation_generator():
+    _combined_plus_equation_config = get_conf("combined_plus_equation")
+    low_bound, up_bound, total_number = _combined_plus_equation_config[
+        "low_bound"], _combined_plus_equation_config["up_bound"], _combined_plus_equation_config["generate_number"]
+    print("number of combined plus equations: %d" % total_number)
+    print("low bound of combined plus equations: %d" % low_bound)
+    print("up bound of combined plus equations: %d\n" % up_bound)
+
+    min_number = int(low_bound / 3)
+    min_number = 1 if min_number == 0 else min_number
+
+    _combined_plus_equations = []
+    for i in range(min_number, up_bound+1):
+        for j in range(min_number, up_bound+1):
+            for k in range(min_number, up_bound+1):
+                if i+j+k <= up_bound and i+j+k >= low_bound:
+                    _combined_plus_equations.append(
+                        (i, SYMBOL_PLUS, j, SYMBOL_PLUS, k))
+    return _random_picker(_combined_plus_equations, total_number)
 
 
-def generate(upper_bound_of_number, equation_number):
+def _combined_minus_equation_generator():
+    _combined_minus_equation_config = get_conf("combined_minus_equation")
+    low_bound, up_bound, total_number = _combined_minus_equation_config[
+        "low_bound"], _combined_minus_equation_config["up_bound"], _combined_minus_equation_config["generate_number"]
+    print("number of combined minus equations: %d" % total_number)
+    print("low bound of combined minus equations: %d" % low_bound)
+    print("up bound of combined minus equations: %d\n" % up_bound)
+
+    min_number = int(low_bound / 3)
+    min_number = 1 if min_number == 0 else min_number
+
+    _combined_minus_equations = []
+    for i in range(low_bound+2, up_bound+1):
+        for j in range(min_number, up_bound+1):
+            if i - j < 0:
+                continue
+            for k in range(min_number, up_bound+1):
+                if i - j - k > low_bound:
+                    _combined_minus_equations.append(
+                        (i, SYMBOL_MINUS, j, SYMBOL_MINUS, k))
+    return _random_picker(_combined_minus_equations, total_number)
+
+
+def _mixed_equation_generator():
+    _mixed_equation_config = get_conf("mixed_equation")
+    low_bound, up_bound, total_number = _mixed_equation_config[
+        "low_bound"], _mixed_equation_config["up_bound"], _mixed_equation_config["generate_number"]
+    print("number of mixed equations: %d" % total_number)
+    print("low bound of mixed equations: %d" % low_bound)
+    print("up bound of mixed equations: %d\n" % up_bound)
+
+    min_number = int(low_bound / 3)
+    min_number = 1 if min_number == 0 else min_number
+
+    _mixed_equations = []
+    for i in range(min_number, up_bound+1):
+        for j in range(min_number, up_bound+1):
+            for k in range(min_number, up_bound+1):
+                if i + j <= up_bound and i + j - k > low_bound and i + j - k <= up_bound:
+                    _mixed_equations.append(
+                        (i, SYMBOL_PLUS, j, SYMBOL_MINUS, k))
+                if i - j > 0 and i - j + k <= up_bound and i - j + k >= low_bound:
+                    _mixed_equations.append(
+                        (i, SYMBOL_MINUS, j, SYMBOL_PLUS, k))
+    return _random_picker(_mixed_equations, total_number)
+
+
+def generate():
     global _equations
     _equations = {}
-    if not validate(upper_bound_of_number, equation_number):
-        raise Exception("required equation number %d is larger than total possible equation number when num limit is %d" % (
-            upper_bound_of_number, equation_number))
 
-    number_of_combined_plus_equations = int(
-        get_conf(NUMBER_OF_COMBINED_PLUS_EQUATIONS, 0))
-    number_of_combined_minus_equations = int(
-        get_conf(NUMBER_OF_COMBINED_MINUS_EQUATIONS, 0))
-    number_of_mixed_equations = int(get_conf(NUMBER_OF_MIXED_EQUATIONS, 0))
-    number_of_simple_equations = equation_number - number_of_combined_plus_equations - number_of_combined_minus_equations - number_of_mixed_equations
+    _equations.update(_simple_equation_generator())
 
-    print("total equations: %d" % equation_number)
-    if number_of_simple_equations < 0:
-        required_equation_number = number_of_combined_plus_equations + \
-            number_of_mixed_equations + number_of_combined_minus_equations
-        raise Exception("required equation number %d is larger than total equation number %d" % (
-            required_equation_number, equation_number))
+    _equations.update(_combined_plus_equation_generator())
 
+    _equations.update(_combined_minus_equation_generator())
 
-    print("number of simple equations: %d" % number_of_simple_equations)
-    for i in range(number_of_simple_equations):
-        while True:
-            if not isDup(_simple_equation_generator(upper_bound_of_number)):
-                break
-
-    print("number of combined plus equations: %d" % number_of_combined_plus_equations)
-    for i in range(number_of_combined_plus_equations):
-        while True:
-            if not isDup(_combined_plus_equation_generator(upper_bound_of_number)):
-                break
-
-    print("number of combined minus equations: %d" % number_of_combined_minus_equations)            
-    for i in range(number_of_combined_minus_equations):
-        while True:
-            if not isDup(_combined_minus_equation_generator(upper_bound_of_number)):
-                break
-    print("number of mixed equations: %d" % number_of_mixed_equations)            
-    for i in range(number_of_mixed_equations):
-        while True:
-            if not isDup(_mixed_equation_generator(upper_bound_of_number)):
-                break
+    _equations.update(_mixed_equation_generator())
 
     return _equations
-
-
-def isDup(equation):
-    key = ""
-    for s in equation:
-        key += str(s)
-
-    if key in _equations:
-        return True
-    _equations[key] = equation
-    return False

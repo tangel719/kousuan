@@ -7,27 +7,37 @@ SYMBOL_PLUS = "+"
 SYMBOL_MINUS = "-"
 # excel 每行的算式的数量
 NUMBER_OF_EQUATIONS_PER_ROW = "number_of_equations_per_row"
-# 生成算式的总数
-NUMBER_OF_EQUATIONS = "number_of_equations"
-# 算式中的最大数字，及n以内的算式
-UPPER_BOUND_OF_NUMBER = "upper_bound_of_number"
-# 连加题的数量
-NUMBER_OF_COMBINED_PLUS_EQUATIONS = "number_of_combined_plus_equations"
-# 连减题的数量
-NUMBER_OF_COMBINED_MINUS_EQUATIONS = "number_of_combined_minus_equations"
-# 混合运算题的数量
-NUMBER_OF_MIXED_EQUATIONS = "number_of_mixed_equations"
 # 生成的文件路径
 EQUATION_FILE_PATH = "equation_file_path"
 # 每次运行生成的xls张数
 BATCH_COUNT = "batch_count"
 
 
-
 _conf = {
-    NUMBER_OF_EQUATIONS_PER_ROW: 5,
-    NUMBER_OF_EQUATIONS: 100,
-    UPPER_BOUND_OF_NUMBER: 20,
+    "simple_equation": {
+        "up_bound": 20,
+        "low_bound": 1,
+        "generate_number": 100,
+        "carry_or_abdication": True,
+    },
+    "combined_plus_equation": {
+        "up_bound": 20,
+        "low_bound": 1,
+        "generate_number": 0,
+        "carry_or_abdication": True,
+    },
+    "combined_minus_equation": {
+        "up_bound": 20,
+        "low_bound": 1,
+        "generate_number": 0,
+        "carry_or_abdication": True,
+    },
+    "mixed_equation": {
+        "up_bound": 1,
+        "low_bound": 1,
+        "generate_number": 0,
+        "carry_or_abdication": True,
+    },
 }
 
 

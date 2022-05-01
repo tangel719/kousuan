@@ -4,7 +4,7 @@ import argparse
 
 from equation_generator import generate
 from equation_writor import write_to_file
-from kousuan_conf import NUMBER_OF_EQUATIONS, UPPER_BOUND_OF_NUMBER, BATCH_COUNT, load_conf, get_conf
+from kousuan_conf import BATCH_COUNT, load_conf, get_conf
 
 
 def main():
@@ -15,13 +15,12 @@ def main():
     config_file = args.config_file
     load_conf(config_file)
 
-    number_of_equations = get_conf(NUMBER_OF_EQUATIONS, 100)
-    upper_bound_of_number = get_conf(UPPER_BOUND_OF_NUMBER, 20)
     batch_count = get_conf(BATCH_COUNT, 1)
 
-    print(int(batch_count))
     for i in range(int(batch_count)):
-        equations = generate(int(upper_bound_of_number), int(number_of_equations))
+        equations = generate()
+        #for k in equations:
+        #    print(k)
         write_to_file(equations)
 
 
